@@ -222,9 +222,12 @@ func get_dir_contents(dir: DirAccess, scripts: Array[String], directory_queue: A
 	
 	while file_name != "":
 		if dir.current_is_dir():
-			if file_name.begins_with('.'): # Skip folders which should never have scripts
-				pass
-			else:
+			var is_in_ignore_paths = false
+			for path: String in _dockUI.ignore_paths:
+				if path in dir.get_current_dir():
+					is_in_ignore_paths = true
+					break
+			if !file_name.begins_with('.') && !is_in_ignore_paths: # Skip folders which should never have scripts, and those in the ignore_paths
 				directory_queue.append(dir.get_current_dir().path_join(file_name))
 		else:
 			if file_name.ends_with(".gd") or file_name.ends_with(".cs") \
